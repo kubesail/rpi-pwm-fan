@@ -142,6 +142,7 @@ int main(int argc, char *argv[]) {
   sprintf(buf, "%d\n", global_pid);
   run_write("/run/pi_fan_hwpwm.pid", buf);
 
+  if(!bcm2835_init()) fatal(0, "bcm2835_init() failed");
   bcm2835_gpio_fsel(pin, BCM2835_GPIO_FSEL_ALT0);
   bcm2835_pwm_set_clock(2);
   bcm2835_pwm_set_mode(1, 1, 1);
