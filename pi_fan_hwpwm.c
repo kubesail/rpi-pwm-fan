@@ -40,7 +40,7 @@ int verbose = 0;
 int fan_state = 0;
 double temp = 25.0;
 pid_t global_pid;
-int pwm_level = -1;
+int pwm_level = -555;
 
 void usage()
 {
