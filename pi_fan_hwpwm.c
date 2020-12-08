@@ -4,15 +4,15 @@
 /
 / Need    http://www.airspayce.com/mikem/bcm2835/index.html
 /
-/ Compile $ gcc -Wall pi_fan_pwm.c -lpigpio -lpthread -o pi_fan_pwm
+/ Compile $ gcc -Wall pi_fan_hwpwm.c -lbcm2835 -o pi_fan_hwpwm
 /
 / Disable $ sudo nano /boot/config.txt            [Raspbian, or use GUI]
           $ sudo nano /boot/firmware/usercfg.txt  [Ubuntu]
 /             # dtoverlay=gpio-fan,gpiopin=14,temp=80000 <-------------- commented out, reboot
 /
-/ Run     $ sudo ./pi_fan_pwm -v
+/ Run     $ sudo ./pi_fan_hwpwm -v
 /
-/ Forget  $ sudo ./pi_fan_pwm &
+/ Forget  $ sudo ./pi_fan_hwpwm &
 /         $ disown -a
 /
 */
