@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
     temp = 0.0001 * (double)t + 0.9 * temp;
     if((loop%4) == 0) { // every second
       fan_loop();
-      sprintf(buf, "%u, %.2f, %d\n", loop/4, temp, gpioGetPWMdutycycle(pin));
+      sprintf(buf, "%u, %.2f, %d\n", loop/4, temp, pwm_level);
       run_write("/run/pi_fan_pwm.state", buf);
       if(verbose) fputs(buf, stdout);
     }
