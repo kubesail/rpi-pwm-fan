@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
 
   global_pid = getpid();
   sprintf(buf, "%d\n", global_pid);
-  run_write("/run/pi_fan_pwm.pid", buf);
+  run_write("/run/pi_fan_hwpwm.pid", buf);
 
   bcm2835_gpio_fsel(pin, BCM2835_GPIO_FSEL_ALT0);
   bcm2835_pwm_set_clock(2);
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
     if((loop%4) == 0) { // every second
       fan_loop();
       sprintf(buf, "%u, %.2f, %d\n", loop/4, temp, pwm_level);
-      run_write("/run/pi_fan_pwm.state", buf);
+      run_write("/run/pi_fan_hwpwm.state", buf);
       if(verbose) fputs(buf, stdout);
     }
     usleep(250000);
