@@ -40,6 +40,7 @@ int verbose = 0;
 int fan_state = 0;
 double temp = 25.0;
 pid_t global_pid;
+int pwm_level = -1;
 
 void usage()
 {
@@ -89,21 +90,28 @@ void run_write(const char *fname, const char *data) {
   close(fd);
 }
 
+void PWM_out(int level) {
+  if(level != pwm_level) {
+    bcm2835_pwm_set_data(1, level); // need that 1 matched to pin
+    pwm_level = level;
+  }
+}
+
 void fan_loop(void) {
   if(!fan_state && (temp > ON_TEMP)) {
-    gpioPWM(pin, KICK_FAN);
+    PWM_out(KICK_FAN);
     fan_state = 1;
     return;
   }
   if(fan_state && (temp < OFF_TEMP)) {
-    gpioPWM(pin, 0);
+    PWM_out(0);
     fan_state = 0;
     return;
   }
   if(fan_state) {
     unsigned out = (double) MIN_FAN + (temp - OFF_TEMP) / (HIGH_TEMP - OFF_TEMP) * (double)(MAX_FAN - MIN_FAN);
-    if(out > 1000) out = 1000;
-    gpioPWM(pin, out);
+    if(out > MAX_FAN) out = MAX_FAN;
+    PWM_out(out);
   }
 }
 
@@ -134,11 +142,11 @@ int main(int argc, char *argv[]) {
   sprintf(buf, "%d\n", global_pid);
   run_write("/run/pi_fan_pwm.pid", buf);
 
-  gpioCfgClock(2, 1, 1);
-  if(gpioInitialise()<0) fatal(0, "gpioInitialise() failed");
-  if(gpioSetPWMfrequency(pin, 20000) != 20000) fatal(0, "PWM freqency error");
-  gpioSetPWMrange(pin, 1000);
-  gpioPWM(pin, 0);
+  bcm2835_gpio_fsel(13,BCM2835_GPIO_FSEL_ALT0 );
+  bcm2835_pwm_set_clock(2);
+  bcm2835_pwm_set_mode(1, 1, 1);
+  bcm2835_pwm_set_range(1,480);
+  PWM_out(0);
 
   while(1) {
     loop++;
@@ -155,6 +163,5 @@ int main(int argc, char *argv[]) {
     usleep(250000);
   }
 
-  gpioTerminate();
   exit(EXIT_SUCCESS);
 }
