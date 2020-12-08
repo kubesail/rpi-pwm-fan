@@ -2,7 +2,7 @@
 /
 / pi_fan_pwm.c, alwynallan@gmail.com 12/2020, no license
 /
-/ Need    http://abyz.me.uk/rpi/pigpio/download.html
+/ Need    http://www.airspayce.com/mikem/bcm2835/index.html
 /
 / Compile $ gcc -Wall pi_fan_pwm.c -lpigpio -lpthread -o pi_fan_pwm
 /
@@ -25,15 +25,15 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <stdarg.h>
-#include <pigpio.h>
+#include <bcm2835.h>
 
-#define PWM_PIN   14
+#define PWM_PIN   13
 #define HIGH_TEMP 80.
 #define ON_TEMP   65.
 #define OFF_TEMP  60.
-#define MIN_FAN   235
-#define KICK_FAN  450
-#define MAX_FAN   1000
+#define MIN_FAN   150
+#define KICK_FAN  200
+#define MAX_FAN   480
 
 unsigned pin = PWM_PIN;
 int verbose = 0;
@@ -46,9 +46,11 @@ void usage()
    fprintf
    (stderr,
       "\n" \
-      "Usage: sudo ./pi_fan_pwm [OPTION]...\n" \
+      "Usage: sudo ./pi_fan_hwpwm [OPTION]...\n" \
       "\n" \
-      "  -g <n> Use GPIO n for fan's PWM input, default %d\n" \
+      "  -g <n> Use Broadcom GPIO n for fan's PWM input, default %d\n" \
+      "         Only GPIO 18 and GPIO 13 are present on the RasPi 4B pin header,\n" \
+      "         and only GPIO 13 is known to work. 
       "  -v     Verbose output\n" \
       "\n"
       , PWM_PIN
