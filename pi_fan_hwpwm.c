@@ -51,7 +51,7 @@ void usage()
       "\n" \
       "  -g <n> Use Broadcom GPIO n for fan's PWM input, default %d\n" \
       "         Only GPIO 18 and GPIO 13 are present on the RasPi 4B pin header,\n" \
-      "         and only GPIO 13 is known to work. 
+      "         and only GPIO 13 is known to work.\n" \
       "  -v     Verbose output\n" \
       "\n"
       , PWM_PIN
