@@ -91,6 +91,8 @@ void run_write(const char *fname, const char *data) {
 }
 
 void PWM_out(int level) {
+  if(level > pwm_level && (level - pwm_level) < 5) return;
+  if(level < pwm_level && (prm_level - level) < 10) return;
   if(level != pwm_level) {
     bcm2835_pwm_set_data(1, level); // need that 1 matched to pin
     pwm_level = level;
