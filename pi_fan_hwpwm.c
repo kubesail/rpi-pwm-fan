@@ -1,6 +1,7 @@
 /*
 /
 / pi_fan_hwpwm.c, alwynallan@gmail.com 12/2020, no license
+/ latest version: https://gist.github.com/alwynallan/1c13096c4cd675f38405702e89e0c536
 /
 / Need    http://www.airspayce.com/mikem/bcm2835/index.html
 /
