@@ -1,5 +1,5 @@
 [Unit]
-Description=Hardware PWM contorl for Raspberry Pi 4 Case Fan
+Description=Hardware PWM control for Raspberry Pi 4 Case Fan
 After=syslog.target multi-user.target
 
 [Service]

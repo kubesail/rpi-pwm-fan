@@ -10,10 +10,10 @@
 / Disable $ sudo nano /boot/config.txt            [Raspbian, or use GUI]
 /         $ sudo nano /boot/firmware/usercfg.txt  [Ubuntu]
 /             # dtoverlay=gpio-fan,gpiopin=14,temp=80000 <- commented out, reboot
-/             enable_uart=0                              <- needed?
-/             dtparam=audio=off                          <- needed?
-/             dtparam=i2c_arm=off                        <- needed?
-/             dtparam=spi=off                            <- needed?
+/             enable_uart=0                              <- needed? not Ubuntu
+/             dtparam=audio=off                          <- needed? not Ubuntu
+/             dtparam=i2c_arm=off                        <- needed? not Ubuntu
+/             dtparam=spi=off                            <- needed? not Ubuntu
 /
 / Run     $ sudo ./pi_fan_hwpwm -v
 /
