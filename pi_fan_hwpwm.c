@@ -1,14 +1,18 @@
 /*
 /
-/ pi_fan_pwm.c, alwynallan@gmail.com 12/2020, no license
+/ pi_fan_hwpwm.c, alwynallan@gmail.com 12/2020, no license
 /
 / Need    http://www.airspayce.com/mikem/bcm2835/index.html
 /
 / Compile $ gcc -Wall pi_fan_hwpwm.c -lbcm2835 -o pi_fan_hwpwm
 /
 / Disable $ sudo nano /boot/config.txt            [Raspbian, or use GUI]
-          $ sudo nano /boot/firmware/usercfg.txt  [Ubuntu]
-/             # dtoverlay=gpio-fan,gpiopin=14,temp=80000 <-------------- commented out, reboot
+/         $ sudo nano /boot/firmware/usercfg.txt  [Ubuntu]
+/             # dtoverlay=gpio-fan,gpiopin=14,temp=80000 <- commented out, reboot
+/             enable_uart=0
+/             dtparam=audio=off
+/             dtparam=i2c_arm=off
+/             dtparam=spi=off
 /
 / Run     $ sudo ./pi_fan_hwpwm -v
 /
@@ -27,7 +31,7 @@
 #include <stdarg.h>
 #include <bcm2835.h>
 
-#define PWM_PIN   13
+#define PWM_PIN   0  // default, uses both GPIO 13 and GPIO 18
 #define HIGH_TEMP 80.
 #define ON_TEMP   65.
 #define OFF_TEMP  60.
@@ -49,12 +53,12 @@ void usage()
       "\n" \
       "Usage: sudo ./pi_fan_hwpwm [OPTION]...\n" \
       "\n" \
-      "  -g <n> Use Broadcom GPIO n for fan's PWM input, default %d\n" \
-      "         Only GPIO 18 and GPIO 13 are present on the RasPi 4B pin header,\n" \
-      "         and only GPIO 13 is known to work.\n" \
+      "  -g <n> Use GPIO n for fan's PWM input, default 0 (both).\n" \
+      "         Only hardware PWM capable GPIO 18 and GPIO 13 are present on\n" \
+      "         the RasPi 4B pin header, and only GPIO 18 can be used with\n" \
+      "         the unmodified case fan.\n" \
       "  -v     Verbose output\n" \
       "\n"
-      , PWM_PIN
    );
 }
 
@@ -94,7 +98,8 @@ void PWM_out(int level) {
   if(level > pwm_level && (level - pwm_level) < 5) return;
   if(level < pwm_level && (pwm_level - level) < 10) return;
   if(level != pwm_level) {
-    bcm2835_pwm_set_data(1, level); // need that 1 matched to pin
+    if(pin == 0 || pin == 13) bcm2835_pwm_set_data(1, level);
+    if(pin == 0 || pin == 18) bcm2835_pwm_set_data(0, level);
     pwm_level = level;
   }
 }
@@ -128,7 +133,7 @@ int main(int argc, char *argv[]) {
     switch (opt) {
     case 'g':
       pin = atoi(optarg);
-      if(pin > 31) fatal(0, "Invalid GPIO");
+      if(pin != 0 && pin != 13 && pin != 18) fatal(0, "Invalid GPIO");
       break;
     case 'v':
       verbose = 1;
@@ -145,10 +150,13 @@ int main(int argc, char *argv[]) {
   run_write("/run/pi_fan_hwpwm.pid", buf);
 
   if(!bcm2835_init()) fatal(0, "bcm2835_init() failed");
-  bcm2835_gpio_fsel(pin, BCM2835_GPIO_FSEL_ALT0);
-  bcm2835_pwm_set_clock(2);
-  bcm2835_pwm_set_mode(1, 1, 1);
-  bcm2835_pwm_set_range(1, 480);
+  if(pin==0 || pin==13) bcm2835_gpio_fsel(13, BCM2835_GPIO_FSEL_ALT0);
+  if(pin==0 || pin==18) bcm2835_gpio_fsel(18, BCM2835_GPIO_FSEL_ALT5);
+  bcm2835_pwm_set_clock(2); // 19.2 / 2 MHz
+  if(pin==0 || pin==13) bcm2835_pwm_set_mode(1, 1, 1);
+  if(pin==0 || pin==13) bcm2835_pwm_set_range(1, 480);
+  if(pin==0 || pin==18) bcm2835_pwm_set_mode(0, 1, 1);
+  if(pin==0 || pin==18) bcm2835_pwm_set_range(0, 480);
   PWM_out(0);
 
   while(1) {
