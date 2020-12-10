@@ -15,7 +15,7 @@ install: $(TARGET)
 	install $(TARGET) /usr/local/sbin
 	cp $(TARGET).service /etc/systemd/system/
 	systemctl enable $(TARGET)
-	systemctl start $(TARGET)
+	systemctl is-active --quiet $(TARGET) || systemctl start $(TARGET)
 
 clean:
 	$(RM) $(TARGET)
