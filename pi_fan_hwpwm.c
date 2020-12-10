@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
     temp = 0.0001 * (double)t + 0.9 * temp;
     if((loop%4) == 0) { // every second
       fan_loop();
-      sprintf(buf, "%u, %.2f, %d\n", loop/4, temp, pwm_level);
+      sprintf(buf, "%u, %.2f, %.1f\n", loop/4, temp, (float)pwm_level/(float)MAX_FAN*100.);
       run_write("/run/pi_fan_hwpwm.state", buf);
       if(verbose) fputs(buf, stdout);
     }
