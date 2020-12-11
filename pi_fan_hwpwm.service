@@ -1,6 +1,6 @@
 [Unit]
 Description=Hardware PWM control for Raspberry Pi 4 Case Fan
-After=syslog.target multi-user.target
+After=syslog.target
 
 [Service]
 Type=simple
