@@ -18,5 +18,16 @@ install: $(TARGET)
 	! systemctl is-active --quiet $(TARGET) || systemctl stop $(TARGET)
 	systemctl start $(TARGET)
 
+uninstall: clean
+	systemctl stop $(TARGET)
+	systemctl disable $(TARGET)
+	$(RM) /usr/local/sbin/$(TARGET)
+	$(RM) /etc/systemd/system/$(TARGET).service
+	$(RM) /run/$(TARGET).*
+	@echo
+	@echo "To remove the source directory"
+	@echo "    $$ cd && rm -rf ${CURDIR}"
+	@echo
+
 clean:
 	$(RM) $(TARGET)
